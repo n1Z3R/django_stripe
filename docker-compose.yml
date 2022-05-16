@@ -1,0 +1,30 @@
+---
+version: "3.9"
+services:
+  db:
+    image: postgres
+    ports: 
+      - 5432:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/mydata
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    command: >
+            bash -c "sleep 10 &&
+            python manage.py makemigrations && 
+            python manage.py migrate &&
+            echo \"from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')\" | python manage.py shell &&
+            python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      db:
+        condition: service_started
