@@ -1,6 +1,6 @@
 import requests
 import stripe
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -16,7 +16,10 @@ stripe.api_key = "sk_test_51KzyrHGbR74uZOiYMfLokqI3xSldt8Ic9cAj4igIKCec6a1tJWOE7
 
 @require_GET
 def create_session_view(request, item_id):
-    item = ItemModel.objects.get(pk=item_id)
+    try:
+        item = ItemModel.objects.get(pk=item_id)
+    except ItemModel.DoesNotExist:
+        raise Http404
     session = stripe.checkout.Session.create(
         line_items=[{
             'price_data': {
@@ -36,11 +39,16 @@ def create_session_view(request, item_id):
     return JsonResponse({"sessionId": session.id})
 
 
-class ItemView(TemplateView):
-    template_name = "index.html"
-
-
 @require_GET
-def redirect_to_checkout_view(request, item_id):
-    r = requests.get(request.build_absolute_uri(reverse('create_session_view', args=(item_id,))))
-    return HttpResponse(r.text)
+def index(request, item_id):
+    try:
+        item = ItemModel.objects.get(pk=item_id)
+    except ItemModel.DoesNotExist:
+        raise Http404
+    context = {
+        "item_id": item_id,
+        "title": item.name,
+        "description": item.description,
+        "price": item.price / 100
+    }
+    return render(request, 'index.html', context)

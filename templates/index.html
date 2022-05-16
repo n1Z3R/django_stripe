@@ -3,21 +3,25 @@
 <head>
     <title>Buy Item 1</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 <body>
-<h1>Item 1</h1>
-<p>Description of Item 1</p>
-<p>1111</p>
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+<p>{{ price }}</p>
 <button id="buy-button">Buy</button>
 <script type="text/javascript">
       var stripe = Stripe('pk_test_51KzyrHGbR74uZOiYpDf0vIqTs6KiEgWSl1t0OZbnGMpA63s6M96oGzEgLZ1kpYQnKpC0SrWq2tS0eeMPNHaxEtt900NHrLF0th');
       var buyButton = document.getElementById('buy-button');
       buyButton.addEventListener('click', function() {
-        fetch('/buy/1', {method: 'GET'})
+        fetch('/buy/{{ item_id }}', {method: 'GET'})
         .then(response => {return response.json();})
         .then(session => {console.log(session);
         return stripe.redirectToCheckout({sessionId: session.sessionId})})
       });
+
+
 
 </script>
 </body>
