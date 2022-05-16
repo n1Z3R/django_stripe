@@ -9,9 +9,9 @@ from django.views.decorators.http import require_GET
 from django.views.generic import TemplateView
 
 from payment_app.models import ItemModel
-from paymentdjango import urls
+from paymentdjango import urls, settings
 
-stripe.api_key = "sk_test_51KzyrHGbR74uZOiYMfLokqI3xSldt8Ic9cAj4igIKCec6a1tJWOE7lloLOmwgUMI3UhOKX0VUCC0ZOfayqiVgY7300Dq3OV0OT"
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 @require_GET
@@ -49,6 +49,8 @@ def index(request, item_id):
         "item_id": item_id,
         "title": item.name,
         "description": item.description,
-        "price": item.price / 100
+        "price": item.price / 100,
+        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLISHABLE_KEY
+
     }
     return render(request, 'index.html', context)
