@@ -1,6 +1,5 @@
 # Django_stripe
 
-## Проверка
 
 ``` docker compose up -d```
 
